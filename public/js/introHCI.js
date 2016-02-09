@@ -12,6 +12,8 @@ function initializePage() {
 	$('.project a').click(addProjectDetails);
 
 	$('#colorBtn').click(randomizeColors);
+
+
 }
 
 /*
@@ -27,6 +29,15 @@ function addProjectDetails(e) {
 	var idNumber = projectID.substr('project'.length);
 
 	console.log("User clicked on project " + idNumber);
+
+	var url = "project/" + idNumber;
+	
+	var project = $(this).closest('.project');
+	$.get(url, function (result) {
+		detailsCallbackFn(result, project);
+	});
+
+	console.log(url);
 }
 
 /*
@@ -35,4 +46,26 @@ function addProjectDetails(e) {
  */
 function randomizeColors(e) {
 	console.log("User clicked on color button");
+
+	$.get("/palette", colorsCallbackFn);
+}
+
+
+function colorsCallbackFn(result) {
+	console.log(result.colors.hex);
+	var colors = result.colors.hex;
+	
+	$('body').css('background-color', colors[0]);
+	$('.thumbnail').css('background-color', colors[1]);
+	$('h1, h2, h3, h4, h5, h5').css('color', colors[2]);
+	$('p').css('color', colors[3]);
+	$('.project img').css('opacity', .75);
+}
+/* Slide 39 -*/
+function detailsCallbackFn(result, project) {
+	console.log(result);
+
+	project.find('.details').html('<img src="' + result.image + '" class="detailsImage">');
+	project.find('.details').append('<p><strong>' + result.date + '</strong></p>');
+	project.find('.details').append(result.summary);
 }
